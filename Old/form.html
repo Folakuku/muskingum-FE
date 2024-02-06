@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Muskingum</title>
+        <link rel="stylesheet" href="./style.css" />
+        <style>
+            table {
+                border-collapse: collapse;
+                width: 50%;
+                margin: 20px;
+            }
+
+            th,
+            td {
+                border: 1px solid #dddddd;
+                text-align: center;
+                padding: 8px;
+            }
+
+            button {
+                margin: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <table id="inputTable">
+            <thead>
+                <tr>
+                    <th>Time (days)</th>
+                    <th>Inflow (m3/s)</th>
+                    <th>Outflow (m3/s)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Rows will be dynamically added here -->
+            </tbody>
+        </table>
+
+        <div>
+            <label for="x">Select x:</label>
+            <input type="radio" name="x" value="0.1" checked /> 0.1
+            <input type="radio" name="x" value="0.2" /> 0.2
+            <input type="radio" name="x" value="0.3" /> 0.3
+            <input type="radio" name="x" value="0.4" /> 0.4
+            <input type="radio" name="x" value="0.5" /> 0.5
+        </div>
+
+        <div>
+            <label for="k">Enter k (travel time in hours):</label>
+            <input type="number" id="k" name="k" required />
+        </div>
+
+        <div>
+            <label for="L">Enter L (channel length in km):</label>
+            <input type="number" id="L" name="L" />
+        </div>
+
+        <div>
+            <label for="V">Enter V (average channel velocity in m/s):</label>
+            <input type="number" id="V" name="V" />
+        </div>
+
+        <button onclick="addRow()">Add Row</button>
+        <button onclick="removeRow()">Remove Row</button>
+        <button onclick="submitForm()">Submit</button>
+
+        <script>
+            function addRow() {
+                var tableBody = document.getElementById("tableBody");
+                var newRow = tableBody.insertRow(tableBody.rows.length);
+
+                var timeCell = newRow.insertCell(0);
+                var inflowCell = newRow.insertCell(1);
+                var outflowCell = newRow.insertCell(2);
+
+                timeCell.innerHTML =
+                    '<input type="number" name="time[]" required />';
+                inflowCell.innerHTML =
+                    '<input type="number" name="inflow[]" required />';
+                outflowCell.innerHTML =
+                    '<input type="number" name="outflow[]" required />';
+            }
+
+            function removeRow() {
+                var tableBody = document.getElementById("tableBody");
+                if (tableBody.rows.length > 0) {
+                    tableBody.deleteRow(tableBody.rows.length - 1);
+                }
+            }
+
+            function submitForm() {
+                var tableBody = document.getElementById("tableBody");
+                var data = [];
+                var x = document.querySelector('input[name="x"]:checked').value;
+                var k = document.getElementById("k").value;
+
+                // Check if any input field is empty
+                for (var i = 0; i < tableBody.rows.length; i++) {
+                    var timeValue = tableBody.rows[i].cells[0].children[0].value;
+                    var inflowValue =
+                        tableBody.rows[i].cells[1].children[0].value;
+                    var outflowValue =
+                        tableBody.rows[i].cells[2].children[0].value;
+
+                    if (
+                        timeValue === "" ||
+                        inflowValue === "" ||
+                        outflowValue === ""
+                    ) {
+                        alert("Please fill in all fields before submitting.");
+                        return;
+                    }
+
+                    data.push({
+                        time: parseFloat(timeValue),
+                        inflow: parseFloat(inflowValue),
+                        outflow: parseFloat(outflowValue),
+                    });
+                }
+
+                // Additional values
+                var L = document.getElementById("L").value;
+                var V = document.getElementById("V").value;
+
+                // Perform submit action
+                fetch("http://localhost:3000/muskingum", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        data: data,
+                        x: parseFloat(x),
+                        k: parseFloat(k),
+                        L: parseFloat(L),
+                        V: parseFloat(V),
+                    }),
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then((responseData) => {
+                        console.log(responseData); // Handle the response from the server
+                        alert("Form submitted successfully!");
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "There was a problem with the fetch operation:",
+                            error
+                        );
+                    });
+            }
+
+            // Populate the table with default values on page load
+            var timeValues = [
+                0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360,
+            ];
+            var inflowValues = [
+                0.01, 0.002, 0.064, 0.979, 0.105, 0.129, 0.149, 0.131, 0.161,
+                0.128, 0.035, 0.067, 0,
+            ];
+            var outflowValues = [
+                0.01, 0.009, 0.014, 0.156, 0.4, 0.275, 0.214, 0.183, 0.164,
+                0.159, 0.134, 0.096, 0.074,
+            ];
+
+            for (var i = 0; i < timeValues.length; i++) {
+                addRow(); // Add rows with default values on page load
+                var lastRow = document.getElementById("tableBody").rows[i];
+                lastRow.cells[0].children[0].value = timeValues[i];
+                lastRow.cells[1].children[0].value = inflowValues[i];
+                lastRow.cells[2].children[0].value = outflowValues[i];
+            }
+        </script>
+    </body>
+</html>
