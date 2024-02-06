@@ -91,7 +91,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to send data to server
     function sendDataToServer(input) {
-        fetch("http://localhost:3000/calculate", {
+        // fetch("http://localhost:3000/calculate", {
+        fetch("https://muskingum-server.onrender.com/calculate", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
