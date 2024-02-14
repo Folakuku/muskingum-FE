@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const addRowButton = document.getElementById("addRow");
     const removeRowButton = document.getElementById("removeRow");
     const form = document.getElementById("dataForm");
+    const output = document.getElementById("output");
 
     // Initial Default Data
     const defaultData = {
@@ -25,9 +26,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const outflowCell = row.insertCell(2);
         const actionCell = row.insertCell(3);
 
-        timeCell.innerHTML = `<input type="number" name="time[]" value="${time}">`;
-        inflowCell.innerHTML = `<input type="number" name="inflow[]" value="${inflow}">`;
-        outflowCell.innerHTML = `<input type="number" name="outflow[]" value="${outflow}">`;
+        timeCell.innerHTML = `<input class="input"  type="number" name="time[]" value="${time}">`;
+        inflowCell.innerHTML = `<input class="input" type="number" name="inflow[]" value="${inflow}">`;
+        outflowCell.innerHTML = `<input class="input" type="number" name="outflow[]" value="${outflow}">`;
         actionCell.innerHTML =
             '<button type="button" class="removeBtn">Remove</button>';
     }
@@ -63,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const inflowValues = data.getAll("inflow[]").map(Number);
         const outflowValues = data.getAll("outflow[]").map(Number);
         const weightFactor = data.get("weightFactor");
+        output.style.display = "block";
 
         if (!validateData(timeValues, inflowValues, outflowValues)) {
             alert(
@@ -91,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to send data to server
     function sendDataToServer(input) {
-        // fetch("http://localhost:3000/calculate", {
         fetch("https://muskingum-server.onrender.com/calculate", {
             method: "POST",
             headers: {
@@ -102,7 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((response) => response.json())
             .then((data) => {
                 // Handle response data
-                console.log(input);
                 data.timeValues = input.timeValues;
                 data.inflowValues = input.inflowValues;
                 displayResults(data);
@@ -133,7 +133,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const headerCell = headerRow.insertCell();
             headerCell.textContent = header;
         });
-        console.log(data);
         data.timeValues.forEach((time, i) => {
             const row = resultsTable.insertRow();
             [
@@ -187,6 +186,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 scales: {
                     y: {
                         beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Inflow and Outflow",
+                        },
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Time",
+                        },
                     },
                 },
             },
@@ -198,10 +207,6 @@ document.addEventListener("DOMContentLoaded", function () {
             y: weightedFlux[index],
         }));
 
-        // Calculate the slope and intercept for the best fit line
-        const lr = linearRegression(weightedFlux, storage);
-        const line = storage.map((x) => ({ x, y: lr.slope * x + lr.intercept }));
-
         const ctx1 = document
             .getElementById("storageFluxChart")
             .getContext("2d");
@@ -212,11 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     {
                         label: "Storage vs Weighted Flux",
                         data: scatterData,
-                        backgroundColor: "blue",
-                    },
-                    {
-                        label: "Best fit line",
-                        data: line,
+                        backgroundColor: "black",
                         type: "line",
                         borderColor: "red",
                         borderWidth: 2,
@@ -243,25 +244,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             },
         });
-
-        // Linear regression function
-        function linearRegression(y, x) {
-            const n = y.length;
-            let sumX = 0,
-                sumY = 0,
-                sumXY = 0,
-                sumXX = 0;
-
-            for (let i = 0; i < y.length; i++) {
-                sumX += x[i];
-                sumY += y[i];
-                sumXY += x[i] * y[i];
-                sumXX += x[i] * x[i];
-            }
-
-            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-            const intercept = (sumY - slope * sumX) / n;
-            return { slope, intercept };
-        }
     }
 });

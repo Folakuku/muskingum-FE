@@ -4,58 +4,89 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Muskingum Flood Model</title>
-        <link rel="stylesheet" href="styles.css" />
+        <!-- <link rel="stylesheet" href="./Old/style.css" /> -->
+        <style>
+            canvas {
+                border-collapse: collapse;
+                width: 600px !important;
+                height: 500px !important;
+                margin: 20px;
+            }
+            .input {
+                width: 50px !important;
+            }
+            table {
+                border-collapse: collapse;
+                width: 50%;
+                height: 50%;
+                margin: 20px;
+            }
+
+            th,
+            td {
+                border: 1px solid #dddddd;
+                text-align: center;
+                padding: 8px;
+            }
+
+            button {
+                margin: 10px;
+            }
+        </style>
     </head>
-    <body>
-        <h1>Muskingum Flood Model</h1>
+    <body style="display: flex; justify-content: center">
         <div>
-            <h2>User Input</h2>
-            <form id="dataForm">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Inflow</th>
-                            <th>Outflow</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be added dynamically here -->
-                    </tbody>
-                </table>
-                <button type="button" id="addRow">Add Row</button>
-                <button type="button" id="removeRow">Remove Row</button>
-                <br /><br />
-                <label for="weightFactor">Select Weight Factor (x):</label>
-                <select name="weightFactor" id="weightFactor">
-                    <option value="0.1">0.1</option>
-                    <option value="0.2">0.2</option>
-                    <option value="0.3">0.3</option>
-                    <option value="0.4">0.4</option>
-                    <option value="0.5">0.5</option>
-                </select>
-                <br /><br />
-                <button type="submit">Submit Data</button>
-            </form>
+            <h1>Muskingum Flood Model</h1>
+            <div>
+                <h2>User Input</h2>
+                <form id="dataForm">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Inflow</th>
+                                <th>Outflow</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be added dynamically here -->
+                        </tbody>
+                    </table>
+                    <button type="button" id="addRow">Add Row</button>
+                    <br /><br />
+                    <label for="weightFactor">Select Weight Factor (x):</label>
+                    <select name="weightFactor" id="weightFactor">
+                        <option value="0.1">0.1</option>
+                        <option value="0.2">0.2</option>
+                        <option value="0.3">0.3</option>
+                        <option value="0.4">0.4</option>
+                        <option value="0.5">0.5</option>
+                    </select>
+                    <br /><br />
+                    <button type="submit">Submit Data</button>
+                </form>
+            </div>
+
+            <!-- Divs for Graphs -->
+            <div id="output" style="display: none">
+                <div style="margin: 60px">
+                    <h2>Hydrograph</h2>
+                    <canvas id="hydrographChart"></canvas>
+                </div>
+
+                <div>
+                    <h2>Graph of Stroage Against Weighted Flux</h2>
+                    <canvas id="storageFluxChart"></canvas>
+                </div>
+
+                <!-- Div for Results Table -->
+                <h2>Table of Final Result</h2>
+                <table id="resultsTable"></table>
+            </div>
+
+            <script src="script.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         </div>
-
-        <!-- Divs for Graphs -->
-        <div>
-            <h2>Hydrograph</h2>
-            <canvas id="hydrographChart"></canvas>
-        </div>
-
-        <div>
-            <h2>Graph of Stroage Against Weighted Flux</h2>
-            <canvas id="storageFluxChart"></canvas>
-        </div>
-
-        <!-- Div for Results Table -->
-        <h2>Table of Final Result</h2>
-        <table id="resultsTable"></table>
-
-        <script src="script.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </body>
 </html>
