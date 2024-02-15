@@ -43,9 +43,18 @@
                     <table id="dataTable">
                         <thead>
                             <tr>
-                                <th>Time</th>
-                                <th>Inflow</th>
-                                <th>Outflow</th>
+                                <th>
+                                    Time
+                                    <select name="timeFactor" id="timeFactor">
+                                        <option value="minutes">minutes</option>
+                                        <option value="hours">hours</option>
+                                        <option value="days" selected>
+                                            days
+                                        </option>
+                                    </select>
+                                </th>
+                                <th>Inflow (m<sup>3</sup>/s)</th>
+                                <th>Outflow (m<sup>3</sup>/s)</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -58,6 +67,7 @@
                     <label for="weightFactor">Select Weight Factor (x):</label>
                     <select name="weightFactor" id="weightFactor">
                         <option value="0.1">0.1</option>
+                        <option value="0.15">0.15</option>
                         <option value="0.2">0.2</option>
                         <option value="0.3">0.3</option>
                         <option value="0.4">0.4</option>

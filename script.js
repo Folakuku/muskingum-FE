@@ -64,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const inflowValues = data.getAll("inflow[]").map(Number);
         const outflowValues = data.getAll("outflow[]").map(Number);
         const weightFactor = data.get("weightFactor");
+        const timeFactor = data.get("timeFactor");
         output.style.display = "block";
 
         if (!validateData(timeValues, inflowValues, outflowValues)) {
@@ -79,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
             inflowValues,
             outflowValues,
             weightFactor,
+            timeFactor,
         });
     });
 
@@ -93,7 +95,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to send data to server
     function sendDataToServer(input) {
-        fetch("https://muskingum-server.onrender.com/calculate", {
+        fetch("http://localhost:3000/calculate", {
+            // fetch("https://muskingum-server.onrender.com/calculate", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -105,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Handle response data
                 data.timeValues = input.timeValues;
                 data.inflowValues = input.inflowValues;
+                data.timeFactor = input.timeFactor;
                 displayResults(data);
             })
             .catch((error) => {
@@ -122,16 +126,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const headerRow = resultsTable.insertRow();
         const headers = [
-            "Time",
-            "Inflow",
+            `Time (${data.timeFactor})`,
+            "Inflow (m<sup>3</sup>/s)",
             "C0I2",
             "C1I1",
             "C2O1",
-            "Q (Outflow)",
+            "Q (Outflow) (m<sup>3</sup>/s)",
         ];
         headers.forEach((header) => {
             const headerCell = headerRow.insertCell();
-            headerCell.textContent = header;
+            headerCell.innerHTML = `<strong>${header}</strong>`;
         });
         data.timeValues.forEach((time, i) => {
             const row = resultsTable.insertRow();
@@ -203,8 +207,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Create scatter data
         const scatterData = storage.map((s, index) => ({
-            x: s,
-            y: weightedFlux[index],
+            x: weightedFlux[index],
+            y: s,
         }));
 
         const ctx1 = document
@@ -232,13 +236,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         position: "bottom",
                         title: {
                             display: true,
-                            text: "Storage",
+                            text: "Weighted Flux",
                         },
                     },
                     y: {
                         title: {
                             display: true,
-                            text: "Weighted Flux",
+                            text: "Storage",
                         },
                     },
                 },
