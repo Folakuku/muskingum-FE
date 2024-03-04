@@ -162,6 +162,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+    Chart.defaults.color = "black";
+    Chart.defaults.font.size = "20px";
+    Chart.defaults.font.weight = "bolder";
+
     function plotGraphs(storage, weightedFlux, time, inflow, outflows) {
         // Hydrograph (Inflow and Outflow vs Time)
         const ctx2 = document.getElementById("hydrographChart").getContext("2d");
@@ -222,6 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         label: "Storage vs Weighted Flux",
                         data: scatterData,
                         backgroundColor: "black",
+                        borderColor: "black",
                         type: "line",
                         borderColor: "red",
                         borderWidth: 2,
